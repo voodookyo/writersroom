@@ -1,0 +1,297 @@
+{
+  "schema": 1,
+  "comment": "analyze/hints 的全部数值阈值与八维评分规则表。调参只改此文件（项目可用 knowledge/lexicons/hint_thresholds.json 覆盖词表部分），代码内禁止硬编码魔法数。规则字段：metric=指标名（见 hints._metric_context），op ∈ >=/<=/>/</==，value=阈值，delta=命中后增减分，reasoning/risk/suggestion 为中文模板（{actual}=实际值，{value}=阈值），evidence_signal=引用该信号的 evidence 块索引，evidence_stats=引用统计项。",
+  "stats": {
+    "reading_chars_per_minute": 400,
+    "default_page_chars": 500,
+    "keywords_top_n": 20
+  },
+  "emotion": {
+    "negation_window_chars": 4,
+    "degree_boost": 1.5
+  },
+  "genre_signal_map": {
+    "悬疑": ["conflict", "hooks"],
+    "犯罪": ["conflict", "hooks"],
+    "惊悚": ["hooks", "conflict"],
+    "动作": ["active_action", "high_cost"],
+    "冒险": ["active_action", "high_cost"],
+    "爱情": ["emotion"],
+    "喜剧": ["emotion"],
+    "剧情": ["emotion", "conflict"],
+    "家庭": ["emotion", "conflict"],
+    "科幻": ["high_cost", "hooks"],
+    "奇幻": ["high_cost", "hooks"],
+    "_default": ["conflict", "emotion"]
+  },
+  "priority": {
+    "high_max": 2,
+    "medium_max": 3
+  },
+  "dimensions": {
+    "story_core": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "conflict_strong",
+          "metric": "conflict_total",
+          "op": ">=",
+          "value": 4,
+          "delta": 1,
+          "reasoning": "冲突标记命中 {actual} 处（≥{value}），故事存在明确的对抗核心。",
+          "suggestion": "保持冲突主线与主角目标绑定，避免支线稀释核心对抗。",
+          "evidence_signal": "conflict"
+        },
+        {
+          "id": "conflict_weak",
+          "metric": "conflict_total",
+          "op": "<=",
+          "value": 1,
+          "delta": -1,
+          "reasoning": "冲突标记仅 {actual} 处（≤{value}），故事核心的对抗支撑偏弱。",
+          "risk": "缺乏核心冲突，故事可能显得平淡、目标感不足。",
+          "suggestion": "为主角设置明确的对手或障碍，并在关键场次埋入对抗点。",
+          "evidence_signal": "conflict"
+        }
+      ]
+    },
+    "genre_fit": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "genre_missing",
+          "metric": "genre_registered",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "project.json 未登记类型（genre 为空），无法核对类型完成度。",
+          "risk": "类型定位缺失，后续开发方向易发散。",
+          "suggestion": "在 project.json 的 genre 字段登记 1-2 个主类型。"
+        },
+        {
+          "id": "genre_signals_present",
+          "metric": "genre_signal_coverage",
+          "op": ">=",
+          "value": 0.5,
+          "delta": 1,
+          "reasoning": "登记类型对应的预期信号覆盖率为 {actual}（≥{value}），类型元素在正文中有实际落点。"
+        },
+        {
+          "id": "genre_signals_absent",
+          "metric": "genre_signal_coverage",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "登记类型对应的预期信号覆盖率为 {actual}，类型承诺未在正文中兑现。",
+          "risk": "登记类型与正文内容脱节，读者/平台预期落空。",
+          "suggestion": "核对 genre 登记是否与素材相符，或在正文中补足该类型的标志性场面。"
+        }
+      ]
+    },
+    "character_drive": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "multi_voices",
+          "metric": "dialogue_chars",
+          "op": ">=",
+          "value": 2,
+          "delta": 1,
+          "reasoning": "有对白的角色 {actual} 人（≥{value}），人物具备表达与博弈的通道。",
+          "evidence_stats": ["dialogue_by_character"]
+        },
+        {
+          "id": "active_ratio_high",
+          "metric": "active_ratio",
+          "op": ">=",
+          "value": 0.4,
+          "delta": 1,
+          "reasoning": "动作块以主动动词开头的比例为 {actual}（≥{value}），人物在主动推进情节。",
+          "evidence_signal": "active_action"
+        },
+        {
+          "id": "active_ratio_low",
+          "metric": "active_ratio",
+          "op": "<=",
+          "value": 0.1,
+          "delta": -1,
+          "reasoning": "动作块以主动动词开头的比例仅 {actual}（≤{value}），人物偏被动。",
+          "risk": "主角缺乏主动选择，人物驱动力不足。",
+          "suggestion": "让关键场次由人物的主动决定开启，而不是被环境推着走。",
+          "evidence_signal": "active_action"
+        }
+      ]
+    },
+    "relationship_tension": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "conflict_spread",
+          "metric": "conflict_scenes",
+          "op": ">=",
+          "value": 2,
+          "delta": 1,
+          "reasoning": "冲突分布在 {actual} 个场（≥{value}），人物关系张力跨场延续。",
+          "evidence_signal": "conflict"
+        },
+        {
+          "id": "negative_emotion_present",
+          "metric": "emotion_negative",
+          "op": ">=",
+          "value": 2,
+          "delta": 1,
+          "reasoning": "负向情绪加权命中 {actual}（≥{value}），关系层面存在可见的摩擦情绪。",
+          "evidence_signal": "emotion"
+        },
+        {
+          "id": "conflict_absent",
+          "metric": "conflict_total",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "冲突标记命中为 {actual}，人物之间缺少正面交锋。",
+          "risk": "关系线平坦，对手戏缺乏张力。",
+          "suggestion": "为核心关系设计一次正面交锋或立场对立场面。",
+          "evidence_signal": "conflict"
+        }
+      ]
+    },
+    "pace_hooks": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "hooks_coverage_good",
+          "metric": "hooks_coverage",
+          "op": ">=",
+          "value": 0.2,
+          "delta": 1,
+          "reasoning": "场尾/集尾钩子覆盖率为 {actual}（≥{value}），场次收束具备牵引力。",
+          "evidence_signal": "hooks"
+        },
+        {
+          "id": "hooks_absent",
+          "metric": "hooks_hits",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "场尾/集尾钩子词命中为 {actual}，场次结尾缺乏悬念牵引。",
+          "risk": "连续观看/阅读动力不足，弃剧风险上升。",
+          "suggestion": "在场尾加入揭示、反转或危机升级类收束。",
+          "evidence_signal": "hooks"
+        },
+        {
+          "id": "long_scene",
+          "metric": "longest_scene_chars",
+          "op": ">=",
+          "value": 800,
+          "delta": -1,
+          "reasoning": "最长场约 {actual} 字（≥{value}），存在单场拖沓风险。",
+          "risk": "单场过长可能拖慢整体节奏。",
+          "suggestion": "拆分超长场，或压缩场内动作描述与重复信息。",
+          "evidence_signal": "structure"
+        }
+      ]
+    },
+    "emotional_value": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "emotion_range",
+          "metric": "emotion_range",
+          "op": ">=",
+          "value": 1,
+          "delta": 1,
+          "reasoning": "正、负向情绪均有命中，情绪谱完整，具备起落空间。",
+          "evidence_signal": "emotion"
+        },
+        {
+          "id": "emotion_dense",
+          "metric": "emotion_total",
+          "op": ">=",
+          "value": 3,
+          "delta": 1,
+          "reasoning": "情绪词加权命中 {actual}（≥{value}），情绪浓度充足。",
+          "evidence_signal": "emotion"
+        },
+        {
+          "id": "emotion_absent",
+          "metric": "emotion_total",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "情绪词加权命中为 {actual}，文本情绪表达稀薄。",
+          "risk": "观众难以与人物建立情绪连接。",
+          "suggestion": "在关键场次明确人物情绪的外化（表情、语气、肢体动作）。",
+          "evidence_signal": "emotion"
+        }
+      ]
+    },
+    "market_identity": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "logline_present",
+          "metric": "logline_present",
+          "op": ">=",
+          "value": 1,
+          "delta": 1,
+          "reasoning": "已登记 logline，项目的一句话卖点有锚点。"
+        },
+        {
+          "id": "logline_missing",
+          "metric": "logline_present",
+          "op": "==",
+          "value": 0,
+          "delta": -1,
+          "reasoning": "未登记 logline，项目的一句话卖点不清。",
+          "risk": "对内沟通与对外推介都缺少统一口径。",
+          "suggestion": "在 project.json 补一条 30 字以内的 logline。"
+        },
+        {
+          "id": "spectacle_present",
+          "metric": "high_cost_hits",
+          "op": ">=",
+          "value": 1,
+          "delta": 1,
+          "reasoning": "高成本/强视觉场面词命中 {actual} 处（≥{value}），具备可视化卖点。",
+          "evidence_signal": "high_cost"
+        }
+      ]
+    },
+    "production_feasibility": {
+      "base": 3,
+      "rules": [
+        {
+          "id": "high_cost_severe",
+          "metric": "high_cost_hits",
+          "op": ">=",
+          "value": 5,
+          "delta": -2,
+          "reasoning": "高成本场面词命中 {actual} 处（≥{value}），制作压力显著。",
+          "risk": "预算与拍摄周期风险高。",
+          "suggestion": "逐项评估高成本场面的必要性，考虑合并或改写为等效低成本方案。",
+          "evidence_signal": "high_cost"
+        },
+        {
+          "id": "high_cost_moderate",
+          "metric": "high_cost_hits",
+          "op": ">=",
+          "value": 2,
+          "delta": -1,
+          "reasoning": "高成本场面词命中 {actual} 处（≥{value}），需要提前规划制作资源。",
+          "suggestion": "在制作边界内为高成本场面排优先级，区分必需与可替代。",
+          "evidence_signal": "high_cost"
+        },
+        {
+          "id": "high_cost_light",
+          "metric": "high_cost_hits",
+          "op": "<=",
+          "value": 1,
+          "delta": 1,
+          "reasoning": "高成本场面词命中仅 {actual} 处（≤{value}），制作体量总体可控。",
+          "evidence_signal": "high_cost"
+        }
+      ]
+    }
+  }
+}

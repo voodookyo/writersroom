@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "collab",
+  "title": "分阶段创作协作",
+  "stages": [
+    {"id": "plan", "title": "项目计划", "template": "co-plan.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": []},
+    {"id": "premise", "title": "前提", "template": "co-premise.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["plan"]},
+    {"id": "structure", "title": "结构", "template": "co-structure.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["premise"]},
+    {"id": "character-bios", "title": "人物小传", "template": "co-character-bios.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["premise"]},
+    {"id": "supporting-antagonists", "title": "配角与对手", "template": "co-supporting-antagonists.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["character-bios"]},
+    {"id": "relationships", "title": "人物关系", "template": "co-relationships.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["character-bios"]},
+    {"id": "world", "title": "世界设定", "template": "co-world.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["premise"]},
+    {"id": "story-bible", "title": "故事设定集", "template": "co-story-bible.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["world", "relationships"]},
+    {"id": "season-arc", "title": "全季弧线", "template": "co-season-arc.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["structure", "story-bible"]},
+    {"id": "episode-synopses", "title": "分集梗概", "template": "co-episode-synopses.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["season-arc"]},
+    {"id": "scene-outline", "title": "分场大纲", "template": "co-scene-outline.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["episode-synopses"]},
+    {"id": "scenes", "title": "场景", "template": "co-scenes.md.tmpl", "gate": true, "needs_locks": true, "unstable_external": false, "inputs": ["scene-outline"]},
+    {"id": "dialogue", "title": "对白", "template": "co-dialogue.md.tmpl", "gate": true, "needs_locks": true, "unstable_external": false, "inputs": ["scenes"]},
+    {"id": "draft", "title": "剧本草稿", "template": "co-draft.md.tmpl", "gate": true, "needs_locks": true, "unstable_external": false, "inputs": ["dialogue"]},
+    {"id": "review", "title": "审读", "template": "co-review.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["draft"]},
+    {"id": "continuity", "title": "连续性", "template": "co-continuity.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["draft"]},
+    {"id": "de-template", "title": "去模板化", "template": "co-de-template.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["review"]},
+    {"id": "audience-commercial", "title": "受众与商业", "template": "co-audience-commercial.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["review"]},
+    {"id": "adaptation", "title": "改编", "template": "co-adaptation.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": []},
+    {"id": "export", "title": "文档输出", "template": "co-export.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": []}
+  ]
+}

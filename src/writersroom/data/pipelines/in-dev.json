@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "id": "in-dev",
+  "title": "开发中项目诊断与重构",
+  "stages": [
+    {"id": "inventory", "title": "材料总表", "template": "dev-inventory.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["sources/", "knowledge/"]},
+    {"id": "meeting-layering", "title": "会议意见分层", "template": "dev-meeting-layering.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["meetings/"]},
+    {"id": "version-evolution", "title": "版本演化追踪", "template": "dev-version-evolution.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["versions.json", "analysis/"]},
+    {"id": "draft-review", "title": "现稿结构复盘", "template": "dev-draft-review.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["version-evolution"]},
+    {"id": "positioning-check", "title": "定位确认", "template": "dev-positioning-check.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["draft-review"]},
+    {"id": "diagnosis", "title": "诊断输出", "template": "dev-diagnosis.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["positioning-check"]},
+    {"id": "rebuild-compare", "title": "重构方案比较", "template": "dev-rebuild-compare.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["diagnosis"]}
+  ]
+}

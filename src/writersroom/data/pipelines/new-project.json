@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "id": "new-project",
+  "title": "新项目故事开发",
+  "stages": [
+    {"id": "materials", "title": "素材整理", "template": "np-materials.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["knowledge/"]},
+    {"id": "material-breakdown", "title": "素材拆解", "template": "np-material-breakdown.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["materials"]},
+    {"id": "positioning", "title": "定位与对标", "template": "np-positioning.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["material-breakdown"]},
+    {"id": "research-questions", "title": "调研问题", "template": "np-research-questions.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["positioning"]},
+    {"id": "story-core", "title": "故事核心", "template": "np-story-core.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["research-questions"]},
+    {"id": "directions", "title": "多方向推演", "template": "np-directions.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["story-core"]},
+    {"id": "evaluation", "title": "方案评估", "template": "np-evaluation.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["directions"]},
+    {"id": "season-structure", "title": "全季结构", "template": "np-season-structure.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["evaluation"]},
+    {"id": "episode-outlines", "title": "分集大纲", "template": "np-episode-outlines.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": false, "inputs": ["season-structure"]}
+  ]
+}

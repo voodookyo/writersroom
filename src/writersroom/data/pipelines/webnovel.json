@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "id": "webnovel",
+  "title": "网文/短篇模式（可选）",
+  "stages": [
+    {"id": "material-analysis", "title": "素材分析", "template": "wn-material-analysis.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": true, "inputs": []},
+    {"id": "market-watch", "title": "公开市场观察", "template": "wn-market-watch.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": true, "inputs": []},
+    {"id": "platform-format", "title": "平台格式适配", "template": "wn-platform-format.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": true, "inputs": ["material-analysis"]},
+    {"id": "writing", "title": "写作", "template": "wn-writing.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": true, "inputs": ["platform-format"]},
+    {"id": "quality-review", "title": "质量审阅", "template": "wn-quality-review.md.tmpl", "gate": true, "needs_locks": false, "unstable_external": true, "inputs": ["writing"]}
+  ]
+}
